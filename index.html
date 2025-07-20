@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Soil Solutions</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Login Section -->
+  <div class="container" id="loginSection">
+    <h2>Smart Soil Solutions</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+    </form>
+  </div>
+  
+  <!-- Signup Modal -->
+  <div id="signupModal">
+    <div class="container">
+      <h2>Sign Up</h2>
+      <input type="email" id="signupEmail" placeholder="Email" required />
+      <input type="password" id="signupPassword" placeholder="Password" required />
+      <select id="signupRole" required>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button onclick="signup()">Create Account</button>
+      <button onclick="hideSignup()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div class="content" id="dashboard" style="display:none;">
+    <h2>📊 Sensor Dashboard</h2>
+    <div class="sensor-card" id="tempCard">🌡 Temperature: --</div>
+    <div class="sensor-card" id="moistureCard">💧 Moisture: --</div>
+    <div class="sensor-card" id="npkCard">🧪 NPK: N --, P --, K --</div>
+    <button onclick="fetchSensorData()">🔄 Refresh</button>
+  </div>
+
+  <!-- Shop Section -->
+  <div class="content" id="shop" style="display:none;">
+    <h2>🛍 Store</h2>
+    <select id="filterCategory" onchange="filterProducts()">
+      <option value="all">All</option>
+      <option value="fertilizer">Fertilizer</option>
+      <option value="seed">Seeds</option>
+    </select>
+    <div id="productList" class="product-grid"></div>
+  </div>
+
+  <!-- Cart Section -->
+  <div class="content" id="cart" style="display:none;">
+    <h2>🛒 My Cart</h2>
+    <div id="cartItems"></div>
+    <button onclick="checkout()">💳 Checkout</button>
+  </div>
+
+  <!-- Navbar -->
+  <div class="navbar" id="mainNavbar" style="display:none;">
+    <div onclick="switchTab('shop')">Shop</div>
+    <div onclick="switchTab('dashboard')">Dashboard</div>
+    <div onclick="switchTab('cart')">Cart</div>
+    <div onclick="switchTab('service')">Service</div>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "Urea", price: 200, category: "fertilizer", image: "https://i.imgur.com/QTPZ9Tk.jpg" },
+      { id: 2, name: "DAP", price: 250, category: "fertilizer", image: "https://i.imgur.com/lSn9oM3.jpg" },
+      { id: 3, name: "Wheat Seeds", price: 100, category: "seed", image: "https://i.imgur.com/H4I2yLd.jpg" }
+    ];
+
+    let cart = [];
+    let npkRecords = [];
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("mainNavbar").style.display = "flex";
+      switchTab('shop');
+    });
+
+    function showSignup() {
+      document.getElementById("signupModal").style.display = "flex";
+    }
+
+    function hideSignup() {
+      document.getElementById("signupModal").style.display = "none";
+    }
+
+    function signup() {
+      alert("Signup successful!");
+      hideSignup();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+      if (tabId === 'cart') displayCart();
+      if (tabId === 'service') showNPKRecords();
+    }
+
+    function displayProducts(list) {
+      const container = document.getElementById("productList");
+      container.innerHTML = "";
+      list.forEach(p => {
+        container.innerHTML += `
+          <div class="product-card">
+            <img src="${p.image}" />
+            <h4>${p.name}</h4>
+            <p>₹${p.price}</p>
+            <button onclick="addToCart(${p.id})">Add to Cart</button>
+          </div>`;
+      });
+    }
+
+    function filterProducts() {
+      const cat = document.getElementById("filterCategory").value;
+      const filtered = cat === "all" ? products : products.filter(p => p.category === cat);
+      displayProducts(filtered);
+    }
+
+    function addToCart(id) {
+      const item = products.find(p => p.id === id);
+      cart.push(item);
+      alert("Added to cart");
+    }
+
+    function displayCart() {
+      const container = document.getElementById("cartItems");
+      container.innerHTML = "";
+      if (cart.length === 0) {
+        container.innerHTML = "<p>Cart is empty.</p>";
+        return;
+      }
+      cart.forEach(p => {
+        container.innerHTML += `<p>${p.name} - ₹${p.price}</p>`;
+      });
+    }
+
+    function checkout() {
+      alert("Payment Successful via Razorpay (mock)");
+      cart = [];
+      switchTab('shop');
+    }
+
+    function fetchSensorData() {
+      document.getElementById("tempCard").textContent = "🌡 Temperature: 27 °C";
+      document.getElementById("moistureCard").textContent = "💧 Moisture: 40%";
+      document.getElementById("npkCard").textContent = "🧪 NPK: N 16, P 8, K 14";
+    }
+
+    function submitNPK() {
+      const val = document.getElementById("npkInput").value;
+      if (val) {
+        npkRecords.push(val);
+        showNPKRecords();
+        document.getElementById("npkInput").value = "";
+      }
+    }
+
+    function showNPKRecords() {
+      const container = document.getElementById("npkDataList");
+      container.innerHTML = npkRecords.map(d => `<p>${d}</p>`).join("");
+    }
+
+    window.onload = () => displayProducts(products);
+  </script>
+</body>
+</html>
