@@ -103,3 +103,40 @@ button:hover {
 #signupModal .container {
     width: 300px;
 }
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    text-align: left;
+    border: 1px solid black;
+}
+
+.cart-item span {
+    flex: 1;
+    color: #333;
+}
+
+.remove-btn {
+    background-color: white;
+    color: white;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 0; /* square corners */
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.remove-btn i {
+    color: black;
+}
+.remove-btn:hover {
+    background-color: #c9302c;
+}
