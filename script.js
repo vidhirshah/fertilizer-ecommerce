@@ -64,12 +64,23 @@ function displayCart() {
     const container = document.getElementById("cartItems");
     container.innerHTML = "";
     if (cart.length === 0) {
-    container.innerHTML = "<p>Cart is empty.</p>";
-    return;
+        container.innerHTML = "<p>Cart is empty.</p>";
+        return;
     }
-    cart.forEach(p => {
-    container.innerHTML += `<p>${p.name} - ₹${p.price}</p>`;
+    cart.forEach((p, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "cart-item";
+        itemDiv.innerHTML = `
+            <span>${p.name} - ₹${p.price}</span>
+            <button class="remove-btn" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button>
+        `;
+        container.appendChild(itemDiv);
     });
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);  // remove 1 item at position `index`
+    displayCart();
 }
 
 function checkout() {
